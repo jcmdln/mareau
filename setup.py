@@ -25,7 +25,8 @@ setup(
         'click',
         'google-api-python-client',
         'httplib2',
-        'oauth2client'
+        'oauth2client',
+        'praw'
     ],
 
     packages = find_packages(

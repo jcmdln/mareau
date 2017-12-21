@@ -13,7 +13,6 @@ TODO:
 
 import click
 import httplib2
-import os
 from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
@@ -24,5 +23,5 @@ from oauth2client.file import Storage
 @click.option('--data',  help='File containing data to parse')
 @click.option('--sheet', help='Hash key of target Google Sheet')
 
-def sheet(auth, data, sheet):
+def sheets(auth, data, sheet):
     """ """

@@ -1,5 +1,5 @@
 import click
-from mareau.cmd.sheet import (sheet)
+from mareau.cmd import (reddit, sheets)
 
 CONTEXT = {
     'help_option_names': ['-h', '--help']
@@ -17,9 +17,10 @@ class Command(click.Group):
         return click.Group.command(self, context, name)
 
 @click.group(cls=Command, context_settings=CONTEXT)
-@click.version_option()
+@click.version_option(None, '-v', '--version')
 
 def mareau():
     pass
 
-mareau.add_command(sheet)
+mareau.add_command(reddit)
+mareau.add_command(sheets)

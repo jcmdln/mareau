@@ -1,1 +1,2 @@
-from mareau.cmd.sheet import (sheet)
+from mareau.cmd.reddit import (reddit)
+from mareau.cmd.sheets import (sheets)
