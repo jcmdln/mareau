@@ -1,5 +1,5 @@
 import click
-from mareau.cmd import (hi)
+from mareau.cmd.sheet import (sheet)
 
 CONTEXT = {
     'help_option_names': ['-h', '--help']
@@ -22,4 +22,4 @@ class Command(click.Group):
 def mareau():
     pass
 
-mareau.add_command(hi)
+mareau.add_command(sheet)
