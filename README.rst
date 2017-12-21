@@ -1,4 +1,4 @@
-mareau - API driven market analysis
-===================================
+mareau
+======
 
 WIP
