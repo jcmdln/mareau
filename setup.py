@@ -1,9 +1,9 @@
 from setuptools import (find_packages, setup)
 
-with open('License.md', 'r', encoding='utf-8') as f:
+with open('License.md') as f:
     License = f.read()
 
-with open('Readme.md', 'r', encoding='utf-8') as f:
+with open('Readme.md') as f:
     Readme = f.read()
 
 setup(
@@ -27,6 +27,7 @@ setup(
 
     install_requires = [
         'click',
+        'future',
         'google-api-python-client',
         'httplib2',
         'oauth2client',

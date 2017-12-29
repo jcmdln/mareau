@@ -10,7 +10,17 @@ analysis based on organic traffic from people and public API's.
 
 ## Running
 
-    mareau reddit \
+    $ mareau reddit -h
+    Usage: mareau reddit [OPTIONS]
+
+    Options:
+      -i, --client_id TEXT      Oauth2 client id
+      -s, --client_secret TEXT  Oauth2 client secret
+      -r, --subreddit TEXT      Target subreddit
+      -u, --user_agent TEXT     Useragent
+      -h, --help                Show this message and exit.
+
+    $ mareau reddit \
       -u 'useragent' \
       -i 'client_id' -s 'client_secret' \
       -r 'subreddit'
@@ -21,6 +31,9 @@ analysis based on organic traffic from people and public API's.
 - Analysis
   - Export API data to Google Sheets
     - Require a blank Google Sheet for custom formatting
+    - Users should be able to define which sheet they want to use
+    - Split all data into quarterly sections with the first page being
+      the complete overview
 - Comments
   - Build CSV of user, comment, replies, timestamp
   - Build a list of comments containing words from custom dictionaries
