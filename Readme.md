@@ -5,7 +5,7 @@ analysis based on organic traffic from people and public API's.
 
 ## Installing
 
-    $ pip3 install --user --upgrade https://github.com/jcmdln/mareau/archive/master.zip
+    $ pip install --user --upgrade https://github.com/jcmdln/mareau/archive/master.zip
     $ mareau
     Usage: mareau [OPTIONS] COMMAND [ARGS]...
 
