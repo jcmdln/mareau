@@ -1,16 +1,20 @@
 from setuptools import (find_packages, setup)
 
-with open('README.rst', 'r', encoding='utf-8') as f:
-    readme = f.read()
+with open('License.md', 'r', encoding='utf-8') as f:
+    License = f.read()
+
+with open('Readme.md', 'r', encoding='utf-8') as f:
+    Readme = f.read()
 
 setup(
     name = 'mareau',
     version = '0.0.0a0',
     description = 'API driven market research automation',
-    long_description = readme,
+    long_description = Readme,
     url = 'https://github.com/jcmdln/mareau',
     author = 'Johnathan Maudlin',
     author_email = 'jcmdln@gmail.com',
+    license = License,
     keywords = ['analysis', 'automation', 'market', 'research'],
 
     classifiers = [

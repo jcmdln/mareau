@@ -1,23 +1,23 @@
-"""
-TODO:
-- Pull comments from a target subreddit
-  - Probably /r/linux/ and /r/windows/
-  - Build a list of all comments that contain a word
-"""
-
 import click
 import praw
+from praw.models import MoreComments
+
 
 @click.command(short_help='Interact with Reddit')
-@click.option('--client_id',     help='Your Client ID',     default='client_id')
-@click.option('--client_secret', help='Your Client Secret', default='client_secret')
-@click.option('--subreddit',     help='Target subreddit',   default='/r/subreddit')
+@click.option('--client_id',     '-i', help='Oauth2 client id')
+@click.option('--client_secret', '-s', help='Oauth2 client secret')
+@click.option('--subreddit',     '-r', help='Target subreddit')
+@click.option('--user_agent',    '-u', help='Useragent')
+#@click.option('--word_list',     '-w', help='Words to search for')
 
-def reddit(client_id, client_secret, subreddit):
-    """ """
+
+def reddit(client_id, client_secret, subreddit, user_agent):
     reddit = praw.Reddit(
-        user_agent='Comment Extraction (by /r/subreddit)',
+        user_agent=user_agent,
         client_id=client_id,
         client_secret=client_secret
     )
-    print('Target:', client_id, client_secret, subreddit)
+    for comment in reddit.subreddit(subreddit).stream.comments():
+        if isinstance(comment, MoreComments):
+            continue
+        print(comment.body)
