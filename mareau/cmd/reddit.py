@@ -1,21 +1,3 @@
-"""
-# Example config.cfg
-
-[Default]
-useragent = 'mareau'
-
-[Reddit]
-# https://github.com/reddit/reddit/wiki/OAuth2
-oauth2_id     = 'Reddit Oauth2 client ID'
-oauth2_secret = 'Reddit Oauth2 client secret'
-
-[Sheets]
-# https://developers.google.com/sheets/api/quickstart/python
-oauth2_id     = 'Google Sheets Oauth2 client ID'
-oauth2_secret = 'Google Sheets Oauth2 client secret'
-"""
-
-
 import click
 import praw
 import os.path
@@ -29,17 +11,17 @@ except ImportError:
 
 
 @click.command(short_help='Interact with Reddit')
-@click.option('--authfile', '-a', default='config.cfg',
+@click.option('--authfile', '-a', default='mareau.cfg',
               help='File containing Oauth2 credentials')
-# @click.option('--dictionary', '-d',
-#               help='list of words to search for')
-@click.option('--subreddit', '-r', default='/r/linux',
+@click.option('--dictionary', '-d', default='dictionary.txt',
+               help='list of words to search for')
+@click.option('--subreddit', '-r', default='all',
               help='Target subreddit')
 @click.option('--watch', '-w', is_flag=True, default=False,
               help='Get ongoing comments')
 
 
-def reddit(authfile, subreddit, watch):
+def reddit(authfile, dictionary, subreddit, watch):
     # Confirm authfile exists, otherwise exit
     if os.path.isfile(authfile):
         print('mareau:', 'found', authfile)
@@ -47,26 +29,41 @@ def reddit(authfile, subreddit, watch):
         print('mareau:', 'ERROR:', authfile, 'not found!')
         exit
 
-    # Read settings from authfile
+    # Confirm dictionary exists if flag passed
+    if os.path.isfile(dictionary):
+        print('mareau:', 'found', dictionary)
+        WordList = set(dictionary.split())
+    else:
+        print('mareau:', 'ERROR:', dictionary, 'not found!')
+        exit
+
+    # Read authfile for settings
     config = configparser.ConfigParser()
     config.read(authfile)
 
-    # Define PRAW settings
+    UserAgent    = config.get('Default', 'useragent')
+    Oauth2Id     = config.get('Reddit',  'oauth2_id')
+    Oauth2Secret = config.get('Reddit',  'oauth2_secret')
+
+    # Setup PRAW using authfile config
     reddit = praw.Reddit(
-        user_agent    = config.get('Default', 'useragent'),
-        client_id     = config.get('Reddit',  'oauth2_id'),
-        client_secret = config.get('Reddit',  'oauth2_secret')
+        user_agent    = UserAgent,
+        client_id     = Oauth2Id,
+        client_secret = Oauth2Secret
     )
 
+
     if watch:
-        # Start server to grab current comments
+        # Start server to grab live comments
         for comment in reddit.subreddit(subreddit).stream.comments():
             if isinstance(comment, MoreComments):
                 continue
-            print(comment.body)
+            if WordList:
+                if WordList.intersection(comment.body):
+                    print(comment.body)
+            else:
+                print(comment.body)
     else:
         # Grab comment history
-        for top_level_comment in submission.comments:
-            if isinstance(top_level_comment, MoreComments):
-                continue
-            print(top_level_comment.body)
+        for submission in reddit.subreddit(subreddit).hot():
+            print(submission.title)
