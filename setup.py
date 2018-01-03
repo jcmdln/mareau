@@ -27,6 +27,7 @@ setup(
 
     install_requires = [
         'click',
+        'configparser',
         'future',
         'google-api-python-client',
         'httplib2',
