@@ -7,11 +7,11 @@ with open('Readme.md') as f:
     Readme = f.read()
 
 setup(
-    name = 'mareau',
+    name = 'markan',
     version = '0.0.0a0',
     description = 'API driven market research automation',
     long_description = Readme,
-    url = 'https://github.com/jcmdln/mareau',
+    url = 'https://github.com/jcmdln/markan',
     author = 'Johnathan Maudlin',
     author_email = 'jcmdln@gmail.com',
     license = License,
@@ -41,7 +41,7 @@ setup(
 
     entry_points = {
         'console_scripts': [
-            'mareau = mareau.cli:mareau'
+            'markan = markan.cli:markan'
         ]
     }
 )

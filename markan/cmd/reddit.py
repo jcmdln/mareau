@@ -11,7 +11,7 @@ except ImportError:
 
 
 @click.command(short_help='Interact with Reddit')
-@click.option('--authfile', '-a', default='mareau.cfg',
+@click.option('--authfile', '-a', default='markan.cfg',
               help='File containing Oauth2 credentials')
 @click.option('--dictionary', '-d', default='dictionary.txt',
                help='list of words to search for')
@@ -24,18 +24,15 @@ except ImportError:
 def reddit(authfile, dictionary, subreddit, watch):
     # Confirm authfile exists, otherwise exit
     if os.path.isfile(authfile):
-        print('mareau:', 'found', authfile)
+        print('reddit:', 'found', authfile)
     else:
-        print('mareau:', 'ERROR:', authfile, 'not found!')
+        print('reddit:', 'ERROR:', authfile, 'not found!')
         exit
 
     # Confirm dictionary exists if flag passed
     if os.path.isfile(dictionary):
-        print('mareau:', 'found', dictionary)
+        print('reddit:', 'found', dictionary)
         WordList = set(dictionary.split())
-    else:
-        print('mareau:', 'ERROR:', dictionary, 'not found!')
-        exit
 
     # Read authfile for settings
     config = configparser.ConfigParser()

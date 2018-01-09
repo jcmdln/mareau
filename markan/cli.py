@@ -1,5 +1,5 @@
 import click
-from mareau.cmd import (reddit, sheets)
+from markan.cmd import (reddit, sheets)
 
 
 CONTEXT = {
@@ -22,9 +22,9 @@ class Command(click.Group):
 @click.version_option(None, '-v', '--version')
 
 
-def mareau():
+def markan():
     pass
 
 
-mareau.add_command(reddit)
-mareau.add_command(sheets)
+markan.add_command(reddit)
+markan.add_command(sheets)

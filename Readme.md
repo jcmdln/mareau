@@ -1,13 +1,13 @@
-`mareau` is a Python utility for analyzing data from API's in various
+`markan` is a Python utility for analyzing data from API's in various
 contexts. The primary goal is to perform rudimentary market research and
 analysis based on organic traffic from people and public API's.
 
 
 ## Installing
 
-    $ pip install --user --upgrade https://github.com/jcmdln/mareau/archive/master.zip
-    $ mareau
-    Usage: mareau [OPTIONS] COMMAND [ARGS]...
+    $ pip install --user --upgrade https://github.com/jcmdln/markan/archive/master.zip
+    $ markan
+    Usage: markan [OPTIONS] COMMAND [ARGS]...
 
     Options:
       -v, --version  Show the version and exit.
@@ -20,8 +20,8 @@ analysis based on organic traffic from people and public API's.
 
 ## Running
 
-    $ mareau reddit -h
-    Usage: mareau reddit [OPTIONS]
+    $ markan reddit -h
+    Usage: markan reddit [OPTIONS]
 
     Options:
       -i, --client_id TEXT      Oauth2 client id
@@ -29,7 +29,7 @@ analysis based on organic traffic from people and public API's.
       -r, --subreddit TEXT      Target subreddit
       -u, --user_agent TEXT     Useragent
       -h, --help                Show this message and exit.
-    $ mareau reddit \
+    $ markan reddit \
       -u 'useragent' \
       -i 'client_id' -s 'client_secret' \
       -r 'subreddit'
