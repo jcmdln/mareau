@@ -5,16 +5,18 @@ import os.path
 from praw.models import MoreComments
 
 try:
+    # Python 3
     import configparser
 except ImportError:
+    # Python 2
     import ConfigParser as configparser
 
 
 @click.command(short_help='Interact with Reddit')
-@click.option('--authfile', '-a', default='markan.cfg',
+@click.option('--authfile', '-a', default='settings.cfg',
               help='File containing Oauth2 credentials')
-@click.option('--dictionary', '-d', default='dictionary.txt',
-               help='list of words to search for')
+@click.option('--dictionary', '-d', is_flag=True, default=False,
+              help='list of words to search for')
 @click.option('--subreddit', '-r', default='all',
               help='Target subreddit')
 @click.option('--watch', '-w', is_flag=True, default=False,
@@ -29,14 +31,13 @@ def reddit(authfile, dictionary, subreddit, watch):
         print('reddit:', 'ERROR:', authfile, 'not found!')
         exit
 
-    # Confirm dictionary exists if flag passed
-    if os.path.isfile(dictionary):
-        print('reddit:', 'found', dictionary)
-        WordList = set(dictionary.split())
-
     # Read authfile for settings
     config = configparser.ConfigParser()
     config.read(authfile)
+
+    if dictionary:
+        mydict = config.get('Default', 'dictionary')
+        WordList = set(mydict.split())
 
     UserAgent    = config.get('Default', 'useragent')
     Oauth2Id     = config.get('Reddit',  'oauth2_id')
@@ -49,18 +50,21 @@ def reddit(authfile, dictionary, subreddit, watch):
         client_secret = Oauth2Secret
     )
 
-
     if watch:
         # Start server to grab live comments
         for comment in reddit.subreddit(subreddit).stream.comments():
             if isinstance(comment, MoreComments):
                 continue
-            if WordList:
-                if WordList.intersection(comment.body):
-                    print(comment.body)
+            if dictionary:
+                for word in WordList:
+                    if word in comment.body:
+                        print(comment.body)
+                        print('------------------------------')
             else:
                 print(comment.body)
+                print('------------------------------')
     else:
         # Grab comment history
         for submission in reddit.subreddit(subreddit).hot():
             print(submission.title)
+            print('------------------------------')

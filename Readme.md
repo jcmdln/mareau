@@ -1,8 +1,11 @@
-`markan` is a Python utility for performing market analytics by grabbing
+`markan` is a Python utility for performing market analysis by grabbing
 data from an API to then be imported and stylized as a Google Sheet.
 This allows for grabbing essential stats and/or information from an
 endpoint to build rich reports using the graphing and charting tools
 within Google Sheets which may be easily shared.
+
+Python 3 is the primary supported version, though additional work to
+support Python 2 as well as the Pypy variants will be performed.
 
 
 ## ToDo

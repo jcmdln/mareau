@@ -9,13 +9,13 @@ with open('Readme.md') as f:
 setup(
     name = 'markan',
     version = '0.0.0a0',
-    description = 'API driven market research automation',
+    description = 'API-driven market analysis',
     long_description = Readme,
     url = 'https://github.com/jcmdln/markan',
     author = 'Johnathan Maudlin',
     author_email = 'jcmdln@gmail.com',
     license = License,
-    keywords = ['analysis', 'automation', 'market', 'research'],
+    keywords = ['market', 'analysis', 'utility'],
 
     classifiers = [
         'Development Status :: 3 - Alpha',
