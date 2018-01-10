@@ -66,5 +66,11 @@ def reddit(authfile, dictionary, subreddit, watch):
     else:
         # Grab comment history
         for submission in reddit.subreddit(subreddit).hot():
-            print(submission.title)
-            print('------------------------------')
+            if dictionary:
+                for word in WordList:
+                    if word in submission.title:
+                        print(submission.title)
+                        print('------------------------------')
+            else:
+                print(submission.title)
+                print('------------------------------')
