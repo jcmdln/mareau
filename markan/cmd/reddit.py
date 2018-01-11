@@ -13,37 +13,45 @@ except ImportError:
 
 
 @click.command(short_help='Interact with Reddit')
-@click.option('--authfile', '-a', default='settings.cfg',
-              help='File containing Oauth2 credentials')
 @click.option('--dictionary', '-d', is_flag=True, default=False,
               help='list of words to search for')
+@click.option('--settings', '-a', default='settings.cfg',
+              help='File containing settings')
 @click.option('--subreddit', '-r', default='all',
               help='Target subreddit')
 @click.option('--watch', '-w', is_flag=True, default=False,
               help='Get ongoing comments')
 
 
-def reddit(authfile, dictionary, subreddit, watch):
-    # Confirm authfile exists, otherwise exit
-    if os.path.isfile(authfile):
-        print('reddit:', 'found', authfile)
+# def ContentFormatting:
+
+def reddit(settings, dictionary, subreddit, watch):
+    # It is required that the settings file exists in the current
+    # directory, so we need to check that it exists and then read any
+    # configuration settings.
+    if os.path.isfile(settings):
+        print('reddit:', 'found', settings)
+        config = configparser.ConfigParser()
+        config.read(settings)
     else:
-        print('reddit:', 'ERROR:', authfile, 'not found!')
+        print('reddit:', 'ERROR:', settings, 'not found!')
         exit
 
-    # Read authfile for settings
-    config = configparser.ConfigParser()
-    config.read(authfile)
-
+    # We need to check if '-d' was passed to initialize some one-time
+    # data to pull the list of words that will be checked against.
     if dictionary:
         mydict = config.get('Default', 'dictionary')
         WordList = set(mydict.split())
 
+    # This section simply sets some reusable variables to be used in
+    # place of performing a raw, verbose lookup later on. This is a
+    # one-time
     UserAgent    = config.get('Default', 'useragent')
     Oauth2Id     = config.get('Reddit',  'oauth2_id')
     Oauth2Secret = config.get('Reddit',  'oauth2_secret')
 
-    # Setup PRAW using authfile config
+    # praw.Reddit is used to initialize the PRAW worker with settings
+    # such as the useragent and Oauth2 credentials to use.
     reddit = praw.Reddit(
         user_agent    = UserAgent,
         client_id     = Oauth2Id,
@@ -51,7 +59,8 @@ def reddit(authfile, dictionary, subreddit, watch):
     )
 
     if watch:
-        # Start server to grab live comments
+        # If specified with '-w', the http server will be left open to
+        # continuously grab comments.
         for comment in reddit.subreddit(subreddit).stream.comments():
             if isinstance(comment, MoreComments):
                 continue
