@@ -1,8 +1,9 @@
+from __future__ import print_function
+from praw.models import MoreComments
 import click
 import praw
 import os.path
 
-from praw.models import MoreComments
 
 try:
     # Python 3
