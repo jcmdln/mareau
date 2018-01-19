@@ -3,8 +3,10 @@ from praw.models import MoreComments
 import click
 import praw
 import os.path
+import subprocess
 
 
+# Python 2/3 don't refer to the same package
 try:
     # Python 3
     import configparser
@@ -13,20 +15,20 @@ except ImportError:
     import ConfigParser as configparser
 
 
+# This section is specific to 'click' and is for defining command line
+# flags.
 @click.command(short_help='Interact with Reddit')
 @click.option('--dictionary', '-d', is_flag=True, default=False,
               help='list of words to search for')
-@click.option('--settings', '-a', default='settings.cfg',
+@click.option('--settings', '-s', default='settings.cfg',
               help='File containing settings')
 @click.option('--subreddit', '-r', default='all',
               help='Target subreddit')
-@click.option('--watch', '-w', is_flag=True, default=False,
-              help='Get ongoing comments')
+# @click.option('--user', '-u', default='all',
+#               help='Target user')
 
 
-# def ContentFormatting:
-
-def reddit(settings, dictionary, subreddit, watch):
+def reddit(settings, dictionary, subreddit):
     # It is required that the settings file exists in the current
     # directory, so we need to check that it exists and then read any
     # configuration settings.
@@ -41,46 +43,44 @@ def reddit(settings, dictionary, subreddit, watch):
     # We need to check if '-d' was passed to initialize some one-time
     # data to pull the list of words that will be checked against.
     if dictionary:
-        mydict = config.get('Default', 'dictionary')
-        WordList = set(mydict.split())
-
-    # This section simply sets some reusable variables to be used in
-    # place of performing a raw, verbose lookup later on. This is a
-    # one-time
-    UserAgent    = config.get('Default', 'useragent')
-    Oauth2Id     = config.get('Reddit',  'oauth2_id')
-    Oauth2Secret = config.get('Reddit',  'oauth2_secret')
+        basedict     = config.get('Dictionary', 'base')
+        BaseWords    = set(basedict.split())
+        commentdict  = config.get('Dictionary', 'comment')
+        CommentWords = set(commentdict.split())
 
     # praw.Reddit is used to initialize the PRAW worker with settings
-    # such as the useragent and Oauth2 credentials to use.
+    # such as the useragent and Oauth2 credentials to use. The
+    # information to use is pulled from the configuration file.
     reddit = praw.Reddit(
-        user_agent    = UserAgent,
-        client_id     = Oauth2Id,
-        client_secret = Oauth2Secret
+        user_agent    = config.get('Default', 'useragent'),
+        client_id     = config.get('Reddit',  'oauth2_id'),
+        client_secret = config.get('Reddit',  'oauth2_secret')
     )
+    reddit.read_only = True
 
-    if watch:
-        # If specified with '-w', the http server will be left open to
-        # continuously grab comments.
-        for comment in reddit.subreddit(subreddit).stream.comments():
-            if isinstance(comment, MoreComments):
-                continue
-            if dictionary:
-                for word in WordList:
+    #
+    for submission in reddit.subreddit(subreddit).hot(limit=None):
+        submission = reddit.submission(id=submission.id)
+        submission.comments.replace_more(limit=None)
+        print('--- Submission ---------------------------')
+        print('[', 'Score:', submission.score,',',
+              'ID:', submission.id, ',',
+              'User:', submission.author, ']',
+              submission.title)
+        print(submission.url)
+        if dictionary:
+            for comment in submission.comments.list():
+                for word in BaseWords and CommentWords:
                     if word in comment.body:
+                        print('--- Comment ---------------------------')
+                        print('[', 'Score:', comment.score,',',
+                              'ID:', comment.id, ',',
+                              'User:', comment.author, ']')
                         print(comment.body)
-                        print('------------------------------')
-            else:
+        else:
+            for comment in submission.comments.list():
+                print('--- Comment ---------------------------')
+                print('[', 'Score:', comment.score,',',
+                      'ID:', comment.id, ',',
+                      'User:', comment.author, ']')
                 print(comment.body)
-                print('------------------------------')
-    else:
-        # Grab comment history
-        for submission in reddit.subreddit(subreddit).hot():
-            if dictionary:
-                for word in WordList:
-                    if word in submission.title:
-                        print(submission.title)
-                        print('------------------------------')
-            else:
-                print(submission.title)
-                print('------------------------------')
