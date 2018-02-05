@@ -5,7 +5,6 @@ import praw
 import os.path
 import subprocess
 
-
 # Python 2/3 don't refer to the same package
 try:
     # Python 3
