@@ -55,7 +55,6 @@ def reddit(dictionary, settings, subreddit):
 
     #
     for submission in reddit.subreddit(subreddit).hot(limit=2):
-        print("reddit: Looking through", subreddit)
         submission = reddit.submission(id=submission.id)
         submission.comments.replace_more(limit=None)
 
@@ -66,21 +65,24 @@ def reddit(dictionary, settings, subreddit):
                 for word in BaseWords and CommentWords:
                     if word in submission.title:
                         current_submission = {
-                            'ID':       submission.id,
-                            'Score':    submission.score,
-                            'User':     submission.author,
-                            'Title':    submission.title,
-                            'URL':      submission.url,
+                            'Subreddit': 'r/'+subreddit,
+                            'ID':        submission.id,
+                            'Score':     submission.score,
+                            'User':      submission.author,
+                            'Title':     submission.title,
+                            'URL':       submission.url,
                             'Comments': []
                         }
                         Submissions.append(current_submission)
 
                         print(
+                            '[',
+                            current_submission['Subreddit'],
                             current_submission['ID'],
                             current_submission['Score'],
                             current_submission['User'],
-                            '\n', current_submission['Title'],
-                            '\n', current_submission['Body']
+                            ']', '\n',
+                            current_submission['Title']
                         )
 
             #
@@ -88,23 +90,29 @@ def reddit(dictionary, settings, subreddit):
                 for word in BaseWords and CommentWords:
                     if word in comment.body:
                         current_comment = {
-                            'ID':      comment.id,
-                            'Score':   comment.score,
-                            'User':    comment.author,
-                            'Body':    comment.body,
-                            'Replies': []
+                            'Submission': submission.id,
+                            'ID':         comment.id,
+                            'Score':      comment.score,
+                            'User':       comment.author,
+                            'Body':       comment.body,
+                            'Replies':    []
                         }
                         current_submission['Comments'].append(current_comment)
+
                         print(
+                            '[',
+                            current_comment['Submission'],
                             current_comment['ID'],
                             current_comment['Score'],
                             current_comment['User'],
-                            '\n', current_comment['Body']
+                            ']', '\n',
+                            current_comment['Body'], '\n'
                         )
 
         #
         else:
             current_submission = {
+                'Subreddit': 'r/'+subreddit,
                 'ID':       submission.id,
                 'Score':    submission.score,
                 'User':     submission.author,
@@ -115,26 +123,32 @@ def reddit(dictionary, settings, subreddit):
             Submissions.append(current_submission)
 
             print(
+                '[',
+                current_submission['Subreddit'],
                 current_submission['ID'],
                 current_submission['Score'],
                 current_submission['User'],
-                '\n', current_submission['Title'],
-                '\n', current_submission['Body']
+                ']', '\n',
+                current_submission['Title'], '\n'
             )
 
             for comment in submission.comments.list():
                 current_comment = {
-                    'ID':      comment.id,
-                    'Score':   comment.score,
-                    'User':    comment.author,
-                    'Body':    comment.body,
-                    'Replies': []
+                    'Submission': submission.id,
+                    'ID':         comment.id,
+                    'Score':      comment.score,
+                    'User':       comment.author,
+                    'Body':       comment.body,
+                    'Replies':    []
                 }
                 current_submission['Comments'].append(current_comment)
 
                 print(
+                    '[',
+                    current_comment['Submission'],
                     current_comment['ID'],
                     current_comment['Score'],
                     current_comment['User'],
-                    '\n', current_comment['Body']
+                    ']', '\n',
+                    current_comment['Body'], '\n'
                 )
