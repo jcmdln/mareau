@@ -1,5 +1,5 @@
 import click
-from markan.cmd import (reddit, sheets)
+from markan.cmd import (reddit, sheets, wordpress)
 
 
 CONTEXT = {
@@ -18,7 +18,11 @@ class Command(click.Group):
             return shell
         return click.Group.command(self, context, name)
 
-@click.group(cls=Command, context_settings=CONTEXT)
+@click.group(
+    cls              = Command,
+    context_settings = CONTEXT
+)
+
 @click.version_option(None, '-v', '--version')
 
 
@@ -28,3 +32,4 @@ def markan():
 
 markan.add_command(reddit)
 markan.add_command(sheets)
+markan.add_command(wordpress)

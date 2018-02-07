@@ -1,11 +1,12 @@
 from __future__ import print_function
-from praw.models import MoreComments
+
 import click
-import praw
 import os.path
 import subprocess
 
-# Python 2/3 don't refer to the same package
+import praw
+from praw.models import MoreComments
+
 try:
     # Python 3
     import configparser
@@ -13,9 +14,7 @@ except ImportError:
     # Python 2
     import ConfigParser as configparser
 
-
-# This section is specific to 'click' and is for defining command line
-# flags.
+#
 @click.command(short_help='Interact with Reddit')
 @click.option('--dictionary', '-d', is_flag=True, default=False,
               help='list of words to search for')
@@ -27,10 +26,9 @@ except ImportError:
 #               help='Target user')
 
 
+#
 def reddit(dictionary, settings, subreddit):
-    # It is required that the settings file exists in the current
-    # directory, so we need to check that it exists and then read any
-    # configuration settings.
+    #
     if os.path.isfile(settings):
         print('reddit:', 'found', settings)
         config = configparser.ConfigParser()
@@ -39,15 +37,12 @@ def reddit(dictionary, settings, subreddit):
         print('reddit:', 'ERROR:', settings, 'not found!')
         exit
 
-    # We need to check if '-d' was passed to initialize some one-time
-    # data to pull the list of words that will be checked against.
+    #
     if dictionary:
         BaseWords    = config.get('Dictionary', 'base').split()
         CommentWords = config.get('Dictionary', 'comment').split()
 
-    # praw.Reddit is used to initialize the PRAW worker with settings
-    # such as the useragent and Oauth2 credentials to use. The
-    # information to use is pulled from the configuration file.
+    #
     reddit = praw.Reddit(
         user_agent    = config.get('Default', 'useragent'),
         client_id     = config.get('Reddit',  'oauth2_id'),
@@ -56,33 +51,90 @@ def reddit(dictionary, settings, subreddit):
     reddit.read_only = True
 
     #
+    Submissions = []
+
+    #
     for submission in reddit.subreddit(subreddit).hot(limit=2):
         print("reddit: Looking through", subreddit)
         submission = reddit.submission(id=submission.id)
         submission.comments.replace_more(limit=None)
 
-        print('--- Submission ---------------------------')
-        print('[', 'Score:', submission.score,',',
-              'ID:', submission.id, ',',
-              'User:', submission.author, ']',
-              submission.title)
-        print(submission.url)
-
+        #
         if dictionary:
+            #
+            for title in submission.title:
+                for word in BaseWords and CommentWords:
+                    if word in submission.title:
+                        current_submission = {
+                            'ID':       submission.id,
+                            'Score':    submission.score,
+                            'User':     submission.author,
+                            'Title':    submission.title,
+                            'URL':      submission.url,
+                            'Comments': []
+                        }
+                        Submissions.append(current_submission)
+
+                        print(
+                            current_submission['ID'],
+                            current_submission['Score'],
+                            current_submission['User'],
+                            '\n', current_submission['Title'],
+                            '\n', current_submission['Body']
+                        )
+
+            #
             for comment in submission.comments.list():
-                for word in BaseWords:
+                for word in BaseWords and CommentWords:
                     if word in comment.body:
-                        for word in CommentWords:
-                            if word in comment.body:
-                                print('--- Comment ---------------------------')
-                                print('[', 'Score:', comment.score,',',
-                                      'ID:', comment.id, ',',
-                                      'User:', comment.author, ']')
-                                print(comment.body)
+                        current_comment = {
+                            'ID':      comment.id,
+                            'Score':   comment.score,
+                            'User':    comment.author,
+                            'Body':    comment.body,
+                            'Replies': []
+                        }
+                        current_submission['Comments'].append(current_comment)
+                        print(
+                            current_comment['ID'],
+                            current_comment['Score'],
+                            current_comment['User'],
+                            '\n', current_comment['Body']
+                        )
+
+        #
         else:
+            current_submission = {
+                'ID':       submission.id,
+                'Score':    submission.score,
+                'User':     submission.author,
+                'Title':    submission.title,
+                'URL':      submission.url,
+                'Comments': []
+            }
+            Submissions.append(current_submission)
+
+            print(
+                current_submission['ID'],
+                current_submission['Score'],
+                current_submission['User'],
+                '\n', current_submission['Title'],
+                '\n', current_submission['Body']
+            )
+
             for comment in submission.comments.list():
-                print('--- Comment ---------------------------')
-                print('[', 'Score:', comment.score,',',
-                      'ID:', comment.id, ',',
-                      'User:', comment.author, ']')
-                print(comment.body)
+                current_comment = {
+                    'ID':      comment.id,
+                    'Score':   comment.score,
+                    'User':    comment.author,
+                    'Body':    comment.body,
+                    'Replies': []
+                }
+                current_submission['Comments'].append(current_comment)
+
+                print(
+                    current_comment['ID'],
+                    current_comment['Score'],
+                    current_comment['User'],
+                    '\n', current_comment['Body']
+                )
