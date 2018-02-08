@@ -30,9 +30,9 @@ setup(
         'configparser',
         'future',
         'google-api-python-client',
-        'httplib2',
         'oauth2client',
-        'praw'
+        'praw',
+        'requests'
     ],
 
     packages = find_packages(
