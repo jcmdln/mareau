@@ -54,12 +54,10 @@ def wordpress():
     # of the returned data from Results() and assign a key that will be
     # our reference to the actual list of data.
 
-    print('markan: wordpress: Parsing results for themes...')
     themes_dict   = Results('themes', 'query_themes')
     themes_total  = int(themes_dict[0])
     themes        = themes_dict[1]['themes']
 
-    print('markan: wordpress: Parsing results for plugins...')
     plugins_dict  = Results('plugins', 'query_plugins')
     plugins_total = int(plugins_dict[0])
     plugins       = plugins_dict[1]['plugins']
@@ -80,22 +78,45 @@ def wordpress():
             themes[i]['num_ratings'],
             themes[i]['homepage']
         ])
-    Sort = sorted(themes_list)
+    themes_sorted = sorted(themes_list)
 
     print('markan: wordpress: Building and sorting list of plugins...')
     plugins_list = []
-    for i in range(len(themes)):
+    for i in plugins:
         plugins_list.append([
-            themes[i]['name'],
-            themes[i]['slug'],
-            themes[i]['version'],
-            themes[i]['author']['user_nicename'],
-            themes[i]['rating'],
-            themes[i]['num_ratings'],
-            themes[i]['homepage']
+            plugins[i]['name'],
+            plugins[i]['slug'],
+            plugins[i]['version'],
+            plugins[i]['author'],
+            plugins[i]['downloaded'],
+            plugins[i]['rating'],
+            plugins[i]['num_ratings'],
+            plugins[i]['homepage']
         ])
-    Sort = sorted(plugins_list)
+    plugins_sorted = sorted(plugins_list)
 
 
     # In this section we will write the information to two different CSV
     # files.
+
+    print('markan: wordpress: Writing themes to wordpress-themes.csv...')
+    theme_csv = open('wordpress-themes.csv', 'w')
+    theme_wr  = csv.writer(theme_csv)
+    theme_head = [
+        'name', 'slug', 'version', 'author', 'rating', 'total ratings',
+        'homepage'
+    ]
+    theme_wr.writerow(theme_head)
+    for i in themes_sorted:
+        theme_wr.writerow(i)
+
+    print('markan: wordpress: Writing plugins to wordpress-plugins.csv...')
+    plugins_csv = open('wordpress-plugins.csv', 'w')
+    plugins_wr  = csv.writer(plugins_csv)
+    plugins_head = [
+        'name', 'slug', 'version', 'author', 'downloaded', 'rating',
+        'total ratings', 'homepage'
+    ]
+    plugins_wr.writerow(plugins_head)
+    for i in plugins_sorted:
+        plugins_wr.writerow(i)
