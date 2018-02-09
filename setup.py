@@ -1,21 +1,22 @@
 from setuptools import (find_packages, setup)
 
-with open('License.md') as f:
-    License = f.read()
-
-with open('Readme.md') as f:
-    Readme = f.read()
+def Open(File):
+    with open(File) as f:
+        return f.read()
 
 setup(
-    name = 'markan',
-    version = '0.0.0a0',
-    description = 'API-driven market analysis',
-    long_description = Readme,
-    url = 'https://github.com/jcmdln/markan',
-    author = 'Johnathan Maudlin',
-    author_email = 'jcmdln@gmail.com',
-    license = License,
-    keywords = ['market', 'analysis', 'utility'],
+    name             = 'markan',
+    version          = '0.0.0a0',
+    description      = 'API-driven market analysis',
+    long_description = Open('Readme.md'),
+    license          = Open('License.md'),
+    url              = 'https://github.com/jcmdln/markan',
+    author           = 'Johnathan Maudlin',
+    author_email     = 'jcmdln@gmail.com',
+
+    keywords = [
+        'market', 'analysis', 'utility'
+    ],
 
     classifiers = [
         'Development Status :: 3 - Alpha',
