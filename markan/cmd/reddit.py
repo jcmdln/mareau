@@ -9,33 +9,27 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-
-@click.command(short_help='Interact with Reddit')
+@click.command(short_help='Pull data from the Reddit API')
 @click.option('--dictionary', '-d', is_flag=True, default=False,
               help='list of words to search for')
 @click.option('--settings', '-s', default='settings.cfg',
               help='File containing settings')
 @click.option('--subreddit', '-r', default='all',
-              help='Target subreddit')
+              help='Target subreddit(s) to pull data from')
 
-
-#
 def reddit(dictionary, settings, subreddit):
-    #
     if os.path.isfile(settings):
-        print('reddit:', 'found', settings)
+        print('markan: reddit:', 'found', settings)
         config = configparser.ConfigParser()
         config.read(settings)
     else:
-        print('reddit:', 'ERROR:', settings, 'not found!')
+        print('markan: reddit:', 'ERROR:', settings, 'not found!')
         exit
 
-    #
     if dictionary:
         BaseWords    = config.get('Dictionary', 'base').split()
         CommentWords = config.get('Dictionary', 'comment').split()
 
-    #
     reddit = praw.Reddit(
         user_agent    = config.get('Default', 'useragent'),
         client_id     = config.get('Reddit',  'oauth2_id'),
@@ -45,68 +39,57 @@ def reddit(dictionary, settings, subreddit):
 
     def Submission():
         current_submission = {
-            'Subreddit': 'r/'+subreddit,
-            'ID':        submission.id,
             'Score':     submission.score,
             'User':      submission.author,
             'Title':     submission.title,
             'URL':       submission.url,
-            'Comments': []
+            'Comments': {}
         }
-        Submissions.append(current_submission)
+        Submissions[submission.id] = current_submission
 
         print(
             '[',
-            current_submission['Subreddit'],
-            current_submission['ID'],
-            current_submission['Score'],
-            current_submission['User'],
-            ']', '\n',
+            'r/'+subreddit, '|',
+            'ID:', submission.id, '|',
+            'Score:', current_submission['Score'], '|',
+            'User:', current_submission['User'],
+            ']', '\n' +
             current_submission['Title']
         )
 
     def Comment():
         current_comment = {
-            'Submission': submission.id,
-            'ID':         comment.id,
             'Score':      comment.score,
             'User':       comment.author,
             'Body':       comment.body,
-            'Replies':    []
+            'Replies':    {}
         }
-        current_submission['Comments'].append(current_comment)
+        Submissions[submission.id]['Comments'][comment.id] = current_comment
 
         print(
             '[',
-            current_comment['Submission'],
-            current_comment['ID'],
-            current_comment['Score'],
-            current_comment['User'],
-            ']', '\n',
+            submission.id, '|',
+            comment.id, '|',
+            'Score:', current_comment['Score'], '|',
+            'User:', current_comment['User'],
+            ']', '\n' +
             current_comment['Body'], '\n'
         )
 
-    Submissions = []
-    for submission in reddit.subreddit(subreddit).hot(limit=2):
+    Submissions = {}
+    for submission in reddit.subreddit(subreddit).hot(limit=None):
         submission = reddit.submission(id=submission.id)
         submission.comments.replace_more(limit=None)
 
-        #
         if dictionary:
-            #
-            for title in submission.title:
-                for word in BaseWords and CommentWords:
-                    if word in submission.title:
-                        Submission()
-
-            #
+            for word in BaseWords and CommentWords:
+                if word in submission.title:
+                    Submission()
             for comment in submission.comments.list():
                 for word in BaseWords and CommentWords:
                     if word in comment.body:
                         Comment()
-        #
         else:
             Submission()
-
             for comment in submission.comments.list():
                 Comment()
