@@ -15,7 +15,7 @@ setup(
     author_email     = 'jcmdln@gmail.com',
 
     keywords = [
-        'market', 'analysis', 'utility'
+        'market', 'analysis'
     ],
 
     classifiers = [
@@ -32,7 +32,6 @@ setup(
         'future',
         'google-api-python-client',
         'oauth2client',
-        'praw',
         'requests'
     ],
 

@@ -1,6 +1,5 @@
-import click
 from markan.cmd import (reddit, sheets, wordpress)
-
+import click
 
 CONTEXT = {'help_option_names': ['-h', '--help']}
 UNKNOWN_OPTIONS = {'ignore_unknown_options': True}
@@ -14,10 +13,8 @@ class Command(click.Group):
 @click.group(cls = Command, context_settings = CONTEXT)
 @click.version_option(None, '-v', '--version')
 
-
 def markan():
     pass
-
 
 markan.add_command(reddit)
 markan.add_command(sheets)
