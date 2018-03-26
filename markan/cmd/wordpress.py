@@ -5,6 +5,7 @@ import csv
 import click
 import json
 import requests
+import time
 
 @click.command(short_help = 'Pull data from WordPress.org')
 @click.option('--plugins', '-p', help='Get list of all plugins',
@@ -23,6 +24,18 @@ def wordpress(plugins, themes):
     theme_info  = "/themes/info/1.1/?action=theme_information&request[slug]="
     theme_dlh   = "/stats/themes/1.0/downloads.php?slug="
 
+    def ToCSV(File, Data):
+        CSV = open(File, 'w')
+        WRT = csv.writer(CSV)
+        print('markan: wordpress: writing to csv ...')
+        for i in Data:
+            WRT.writerow(i)
+
+    def ToJSON(File, Data):
+        f = open(File, 'w')
+        for i in Data:
+            f.write(i)
+
     def Get(API, Info, Hist, Type):
         print('markan: wordpress: getting total number of pages...')
         req   = requests.get(wp_api + API + '&request[per_page]=999')
@@ -40,7 +53,6 @@ def wordpress(plugins, themes):
             g = r.json()
             t = g[Type]
 
-            threads_max = 2
             threads     = []
             thr         = len(threads)
 
@@ -55,9 +67,9 @@ def wordpress(plugins, themes):
                 d['download_history'] = [h]
                 data.append(d)
 
-            while thr == threads_max:
+            while thr >= 2:
                 print('markan: wordpress: Waiting for thread to free...')
-                wait(5)
+                time.sleep(5)
 
             try:
                 for i in range(len(t)):
@@ -71,18 +83,6 @@ def wordpress(plugins, themes):
                     thread.start()
 
         return data
-
-    def ToCSV(File, Data):
-        CSV = open(File, 'w')
-        WRT = csv.writer(CSV)
-        print('markan: wordpress: writing to csv ...')
-        for i in Data:
-            WRT.writerow(i)
-
-    def ToJSON(File, Data):
-        f = open(File, 'w')
-        for i in Data:
-            f.write(i)
 
     if plugins:
         print('markan: wordpress: getting plugins ...')
