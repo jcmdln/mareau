@@ -32,7 +32,7 @@ def wordpress(plugins, themes):
         data[Type] = []
 
         page = 1
-        while page <= 5:
+        while page <= pages:
             print('markan: wordpress: getting page', str(page), 'of', str(pages)+ '...')
             r = requests.get(wp_api + API + '&request[per_page]=999')
             g = r.json()
