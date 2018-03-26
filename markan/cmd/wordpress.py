@@ -64,7 +64,8 @@ def wordpress(plugins, themes):
 
                 f = requests.get(wp_api + Hist + s)
                 h = f.json()
-                d['download_history'] = [h]
+                for dl in h:
+                    d['download_history'] = i
                 data.append(d)
 
             while thr >= 2:
