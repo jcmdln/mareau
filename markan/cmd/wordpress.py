@@ -24,30 +24,42 @@ def wordpress(plugins, themes):
 
     def Get(API, Info, Hist, Type):
         print('markan: wordpress: getting total number of pages...')
-        req   = requests.get(wp_api + API)
+        req   = requests.get(wp_api + API + '&request[per_page]=999')
         get   = req.json()
         pages = get['info']['pages']
 
-        data  = {}
+        data       = {}
         data[Type] = []
 
-        page  = 1
-        while page <= pages:
+        page = 1
+        while page <= 5:
             print('markan: wordpress: getting page', str(page), 'of', str(pages)+ '...')
-            r = requests.get(wp_api + API + '&request[page]=' + str(page))
+            r = requests.get(wp_api + API + '&request[per_page]=999')
             g = r.json()
             t = g[Type]
 
-            for i in range(len(t)):
-                s = t[i]['slug']
-                print('markan: wordpress: getting info for', s + '...')
-                f = requests.get(wp_api + Info + s)
-                d = f.json()
+            try:
+                for i in range(len(t)):
+                    s = t[i]['slug']
+                    print('markan: wordpress: getting info for', s + '...')
+                    f = requests.get(wp_api + Info + s)
+                    d = f.json()
 
-                f = requests.get(wp_api + Hist + s)
-                h = f.json()
-                d['download_history'] = h
-                data[Type].append(d)
+                    f = requests.get(wp_api + Hist + s)
+                    h = f.json()
+                    d['download_history'] = h
+                    data[Type].append(d)
+            except:
+                for i in t:
+                    s = t[i]['slug']
+                    print('markan: wordpress: getting info for', s + '...')
+                    f = requests.get(wp_api + Info + s)
+                    d = f.json()
+
+                    f = requests.get(wp_api + Hist + s)
+                    h = f.json()
+                    d['download_history'] = h
+                    data[Type].append(d)
 
             page = page + 1
         return data
