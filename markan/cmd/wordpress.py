@@ -1,9 +1,11 @@
 from __future__ import print_function
+from threading import Thread
 
 import csv
 import click
 import json
 import requests
+import time
 
 @click.command(short_help = 'Pull data from WordPress.org')
 @click.option('--plugins', '-p', help='Get list of all plugins',
@@ -25,18 +27,19 @@ def wordpress(plugins, themes):
     def ToCSV(File, Data):
         CSV = open(File, 'w')
         WRT = csv.writer(CSV)
-        print('markan: wordpress: writing to csv ...')
+        print('markan: wordpress: writing csv to file...')
         for i in Data:
             WRT.writerow(i)
 
     def ToJSON(File, Data):
         f = open(File, 'w')
+        print('markan: wordpress: writing json to file...')
         for i in Data:
             f.write(i)
 
     def Get(API, Info, Hist, Type):
         print('markan: wordpress: getting total number of pages...')
-        req   = requests.get(wp_api + API + '&request[per_page]=999')
+        req   = requests.get(wp_api + API + '&request[per_page]=250')
         get   = req.json()
         pages = get['info']['pages']
 
@@ -45,36 +48,48 @@ def wordpress(plugins, themes):
 
         page = 1
         while page <= pages:
-            print('markan: wordpress: getting page', str(page), 'of', str(pages)+ '...')
-            r = requests.get(wp_api + API + '&request[per_page]=999')
+            print('markan: wordpress: getting page', str(page),
+                  'of', str(pages)+ '...')
+            r = requests.get(wp_api + API
+                + '&request[page]=' + str(page)
+                + '&request[per_page]=250'
+            )
             g = r.json()
             t = g[Type]
 
-            try:
-                for i in range(len(t)):
-                    s = t[i]['slug']
-                    print('markan: wordpress: getting info for', s + '...')
-                    f = requests.get(wp_api + Info + s)
-                    d = f.json()
+            def Getter(i):
+                s = t[i]['slug']
+                print('markan: wordpress: getting info for', s + '...')
+                f = requests.get(wp_api + Info + s)
+                d = f.json()
 
-                    f = requests.get(wp_api + Hist + s)
-                    h = f.json()
-                    d['download_history'] = h
-                    data[Type].append(d)
-            except:
+                f = requests.get(wp_api + Hist + s)
+                h = f.json()
+                d['download_history'] = h
+                data[Type].append(d)
+
+            queue = []
+
+            if plugins:
                 for i in t:
-                    s = t[i]['slug']
-                    print('markan: wordpress: getting info for', s + '...')
-                    f = requests.get(wp_api + Info + s)
-                    d = f.json()
+                    thread = Thread(target=Getter, args=(i,))
+                    queue.append(thread)
+                    thread.start()
+                    #time.sleep(0.025)
 
-                    f = requests.get(wp_api + Hist + s)
-                    h = f.json()
-                    d['download_history'] = h
-                    data[Type].append(d)
+            if themes:
+                for i in range(len(t)):
+                    thread = Thread(target=Getter, args=(i,))
+                    queue.append(thread)
+                    thread.start()
+                    #time.sleep(0.025)
+
+            for q in queue:
+                q.join()
 
             page = page + 1
-        return data
+
+        return data[Type]
 
     if plugins:
         print('markan: wordpress: getting plugins ...')
