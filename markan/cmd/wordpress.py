@@ -5,7 +5,6 @@ import csv
 import click
 import json
 import requests
-import time
 
 @click.command(short_help = 'Pull data from WordPress.org')
 @click.option('--plugins', '-p', help='Get list of all plugins',
@@ -39,7 +38,7 @@ def wordpress(plugins, themes):
 
     def Get(API, Info, Hist, Type):
         print('markan: wordpress: getting total number of pages...')
-        req   = requests.get(wp_api + API + '&request[per_page]=250')
+        req   = requests.get(wp_api + API)
         get   = req.json()
         pages = get['info']['pages']
 
@@ -50,10 +49,7 @@ def wordpress(plugins, themes):
         while page <= pages:
             print('markan: wordpress: getting page', str(page),
                   'of', str(pages)+ '...')
-            r = requests.get(wp_api + API
-                + '&request[page]=' + str(page)
-                + '&request[per_page]=250'
-            )
+            r = requests.get(wp_api + API + '&request[page]=' + str(page))
             g = r.json()
             t = g[Type]
 
@@ -75,14 +71,12 @@ def wordpress(plugins, themes):
                     thread = Thread(target=Getter, args=(i,))
                     queue.append(thread)
                     thread.start()
-                    #time.sleep(0.025)
 
             if themes:
                 for i in range(len(t)):
                     thread = Thread(target=Getter, args=(i,))
                     queue.append(thread)
                     thread.start()
-                    #time.sleep(0.025)
 
             for q in queue:
                 q.join()
