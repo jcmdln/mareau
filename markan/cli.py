@@ -1,8 +1,14 @@
-from markan.cmd import (reddit, sheets, wordpress)
+from markan.cmd import (envato, reddit, sheets, wordpress)
+
 import click
 
-CONTEXT = {'help_option_names': ['-h', '--help']}
-UNKNOWN_OPTIONS = {'ignore_unknown_options': True}
+CONTEXT = {
+    'help_option_names': ['-h', '--help']
+}
+
+UNKNOWN_OPTIONS = {
+    'ignore_unknown_options': True
+}
 
 class Command(click.Group):
     def command(self, context, name):
@@ -16,6 +22,7 @@ class Command(click.Group):
 def markan():
     pass
 
+markan.add_command(envato)
 markan.add_command(reddit)
 markan.add_command(sheets)
 markan.add_command(wordpress)
