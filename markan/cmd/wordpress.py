@@ -1,9 +1,8 @@
-from __future__ import print_function
-from threading import Thread
+from __future__   import print_function
+from markan.utils import (ToCSV, ToJSON)
+from threading    import Thread
 
-import csv
 import click
-import json
 import requests
 
 @click.command(short_help = 'Pull data from WordPress.org')
@@ -14,27 +13,12 @@ import requests
 
 def wordpress(plugins, themes):
     wp_api      = "https://api.wordpress.org"
-
     plugins_api = "/plugins/info/1.2/?action=query_plugins"
     plugin_info = "/plugins/info/1.1/?action=plugin_information&request[slug]="
     plugin_dlh  = "/stats/plugin/1.0/downloads.php?slug="
-
     themes_api  = "/themes/info/1.2/?action=query_themes"
     theme_info  = "/themes/info/1.1/?action=theme_information&request[slug]="
     theme_dlh   = "/stats/themes/1.0/downloads.php?slug="
-
-    def ToCSV(File, Data):
-        CSV = open(File, 'w')
-        WRT = csv.writer(CSV)
-        print('markan: wordpress: writing csv to file...')
-        for i in Data:
-            WRT.writerow(i)
-
-    def ToJSON(File, Data):
-        f = open(File, 'w')
-        print('markan: wordpress: writing json to file...')
-        for i in Data:
-            f.write(i)
 
     def Get(API, Info, Hist, Type):
         print('markan: wordpress: getting total number of pages...')
