@@ -11,7 +11,7 @@ import requests
 @click.option('--token',    '-t', help='Auth token', default='')
 
 def envato(category, domain, token):
-    page = 60
+    page = 1
     url  = 'https://api.envato.com/v1/discovery/search/search/item'
     opts = '?page=' + str(page) + '&site=' + domain + '&category=' + category
     data = []
