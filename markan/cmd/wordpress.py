@@ -27,7 +27,7 @@ def wordpress(plugins, themes):
     data = []
 
     def Get(API, Info, Hist):
-        page = 122
+        page = 1
         while wp_api:
             print('markan: wordpress: getting page', str(page) + '...')
             r = requests.get(wp_api + API + '&request[page]=' + str(page))
