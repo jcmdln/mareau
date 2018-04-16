@@ -30,17 +30,14 @@ def wordpress(plugins, themes):
         page = 1
         while wp_api:
             print('markan: wordpress: getting page', str(page) + '...')
-            r = requests.get(wp_api + API + '&request[page]=' + str(page))
+            r = requests.get(wp_api + API + '&request[page]=' + str(page)
+                             + '&request[per_page]=100')
             g = r.json()
 
             def Getter(i):
                 s = g[targ][i]['slug']
-                print('markan: wordpress: getting info for', s + '...')
-                f = requests.get(wp_api + Info + s)
+                f = requests.get(wp_api + Info + s + '&request[per_page]=100')
                 d = f.json()
-                f = requests.get(wp_api + Hist + s)
-                h = f.json()
-                d['download_history'] = h
                 data.append(d)
 
             queue = []
@@ -56,6 +53,7 @@ def wordpress(plugins, themes):
                     thread.start()
             for q in queue:
                 q.join()
+
             if g['info']['pages'] == page:
                 return
             else:
