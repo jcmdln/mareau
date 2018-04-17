@@ -15,6 +15,7 @@ def envato(category, domain, token):
     url  = 'https://api.envato.com/v1/discovery/search/search/item'
     opts = '?page=' + str(page) + '&site=' + domain + '&category=' + category
     data = []
+
     while url:
         print('markan: envato: getting page', str(page) + '...')
         r = requests.get(url + opts, headers = {
@@ -22,8 +23,31 @@ def envato(category, domain, token):
             'Authorization' : 'Bearer ' + token
         })
         s = r.json()
-        data.append(s)
-        if s['links']['next_page_url'] is None:
+
+        for i in range(len(s['matches'])):
+            d = {}
+            d['site']           = s['matches'][i]['site']
+            d['id']             = s['matches'][i]['id']
+            d['url']            = s['matches'][i]['url']
+            d['name']           = s['matches'][i]['name']
+            d['description']    = s['matches'][i]['description']
+            d['summary']        = s['matches'][i]['summary']
+            d['tags']           = s['matches'][i]['tags']
+            d['classification'] = s['matches'][i]['classification']
+            d['price_cents']    = s['matches'][i]['price_cents']
+            d['total_sales']    = s['matches'][i]['number_of_sales']
+            d['author']         = s['matches'][i]['author_username']
+            d['rating']         = s['matches'][i]['rating']['rating']
+            d['total_ratings']  = s['matches'][i]['rating']['count']
+            d['updated']        = s['matches'][i]['updated_at']
+            d['published']      = s['matches'][i]['published_at']
+            d['trending']       = s['matches'][i]['trending']
+            data.append(d)
+
+        pages = s['links']['last_page_url'].split('&')
+        pages = pages[1].split('=')
+        pages = int(pages[1])
+        if page == pages:
             ToJSON('themeforest-'+category+'.json', json.dumps(data))
             return
         else:
