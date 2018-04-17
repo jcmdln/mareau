@@ -2,15 +2,17 @@ from __future__   import print_function
 from markan.utils import (ToCSV, ToJSON)
 from threading    import Thread
 import click
-import json
+import json as j
 import requests
 
 @click.command(short_help = 'Pull data from the Envato API')
-@click.option('--category', '-c', help='Category',   default='wordpress')
-@click.option('--domain',   '-d', help='Domain',     default='themeforest.net')
-@click.option('--token',    '-t', help='Auth token', default='')
+@click.option('--category', '-c', help='Category',       default='wordpress')
+@click.option('--domain',   '-d', help='Domain',         default='themeforest.net')
+@click.option('--token',    '-t', help='Auth token',     default='')
+@click.option('--csv',      '-c', help='Export as CSV',  is_flag=True, default=False)
+@click.option('--json',     '-j', help='Export as JSON', is_flag=True, default=False)
 
-def envato(category, domain, token):
+def envato(category, domain, token, csv, json):
     page = 1
     url  = 'https://api.envato.com/v1/discovery/search/search/item'
     opts = '?page=' + str(page) + '&site=' + domain + '&category=' + category
@@ -48,7 +50,12 @@ def envato(category, domain, token):
         pages = pages[1].split('=')
         pages = int(pages[1])
         if page == pages:
-            ToJSON('themeforest-'+category+'.json', json.dumps(data))
+            if json:
+                ToJSON('themeforest-'+category+'.json', j.dumps(data))
+
+            if csv:
+                ToCSV('themeforest-'+category+'.csv', data)
+
             return
         else:
             page = page + 1

@@ -1,8 +1,9 @@
 from __future__   import print_function
 from markan.utils import (ToCSV, ToJSON)
 from threading    import Thread
+
 import click
-import json
+import json as j
 import requests
 
 @click.command(short_help = 'Pull data from WordPress.org')
@@ -10,8 +11,10 @@ import requests
               is_flag=True, default=False)
 @click.option('--themes',  '-t', help='Get list of all themes',
               is_flag=True, default=False)
+@click.option('--csv',      '-c', help='Export as CSV',  is_flag=True, default=False)
+@click.option('--json',     '-j', help='Export as JSON', is_flag=True, default=False)
 
-def wordpress(plugins, themes):
+def wordpress(plugins, themes, csv, json):
     wp_api = "https://api.wordpress.org"
     if plugins:
         api  = "/plugins/info/1.2/?action=query_plugins"
@@ -62,8 +65,14 @@ def wordpress(plugins, themes):
     if plugins:
         print('markan: wordpress: getting plugins ...')
         r = Get(api, info, hist)
-        ToJSON('wordpress-plugins.json', json.dumps(data))
+        if json:
+            ToJSON('wordpress-plugins.json', j.dumps(data))
+        if csv:
+            ToCSV('wordpress-plugins.csv', data)
     if themes:
         print('markan: wordpress: getting themes ...')
         r = Get(api, info, hist)
-        ToJSON('wordpress-themes.json', json.dumps(data))
+        if json:
+            ToJSON('wordpress-themes.json', j.dumps(data))
+        if csv:
+            ToCSV('wordpress-themes.csv', data)
