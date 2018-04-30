@@ -15,6 +15,10 @@ import requests
               default=False)
 
 def envato(category, domain, token, csv, json):
+    if token == '':
+        print('markan: envato: no token? NO DATA!')
+        return
+
     page = 1
     url  = 'https://api.envato.com/v1/discovery/search/search/item'
     opts = '?page='+str(page) + '&site='+domain + '&category='+category
