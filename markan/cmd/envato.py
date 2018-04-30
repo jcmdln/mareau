@@ -19,21 +19,26 @@ def envato(category, domain, token, csv, json):
         print('markan: envato: no token? NO DATA!')
         return
 
-    page = 1
-    url  = 'https://api.envato.com/v1/discovery/search/search/item'
-    opts = '?page='+str(page) + '&site='+domain + '&category='+category
-    data = []
+    data  = []
+    page  = 1
+    pages = 2
 
-    while url:
+    while page <= pages:
         print('markan: envato: getting page', str(page),
               'of', domain, category, '...')
-        r = requests.get(url + opts + '&page_size=100', headers = {
+        r = requests.get(
+            'https://api.envato.com/v1/discovery/search/search/item'
+            + '?page='+str(page) + '&site='+domain + '&category='+category
+            + '&page_size=100', headers = {
             'Content-Type'  : 'application/json',
             'Authorization' : 'Bearer ' + token
         })
         s = r.json()
+        pages = s['links']['last_page_url'].split('&')
+        pages = pages[1].split('=')
+        pages = int(pages[1])
 
-        for i in range(len(s['matches'])):
+        for i in ['matches']:
             d = {}
             d['site']           = s['matches'][i]['site']
             d['id']             = s['matches'][i]['id']
@@ -53,18 +58,13 @@ def envato(category, domain, token, csv, json):
             d['trending']       = s['matches'][i]['trending']
             data.append(d)
 
-        pages = s['links']['last_page_url'].split('&')
-        pages = pages[1].split('=')
-        pages = int(pages[1])
+        page = page + 1
 
-        if page == pages:
-            if "/" in category:
-                category = category.split('/')
-                category = category[-1]
-            if json:
-                ToJSON('themeforest-'+category+'.json', j.dumps(data))
-            if csv:
-                ToCSV('themeforest-'+category+'.csv', data)
-            return
-        else:
-            page += 1
+
+    if "/" in category:
+        category = category.split('/')
+        category = category[-1]
+    if json:
+        ToJSON('envato-'+domain+'-'+category+'.json', j.dumps(data))
+    if csv:
+        ToCSV('envato-'+domain+'-'+category+'.csv', data)
