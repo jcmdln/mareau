@@ -1,5 +1,5 @@
 from __future__   import print_function
-from markan.utils import (ToCSV, ToJSON)
+from markan.utils import (WriteCsv, WriteJson)
 from threading    import Thread
 
 import click
@@ -71,16 +71,17 @@ def wordpress(plugins, themes, csv, json):
         print('markan: wordpress: getting plugins ...')
 
         if json:
-            ToJSON('wordpress-plugins.json', j.dumps(data))
+            WriteJson('wordpress-plugins.json', j.dumps(data))
 
         if csv:
-            ToCSV('wordpress-plugins.csv', data)
+            WriteCsv('wordpress-plugins.csv', data)
 
     if themes:
         r = Get(api, info, hist)
         print('markan: wordpress: getting themes ...')
 
         if json:
-            ToJSON('wordpress-themes.json', j.dumps(data))
+            WriteJson('wordpress-themes.json', j.dumps(data))
+
         if csv:
-            ToCSV('wordpress-themes.csv', data)
+            WriteCsv('wordpress-themes.csv', data)

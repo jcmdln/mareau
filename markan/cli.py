@@ -1,4 +1,4 @@
-from markan.cmd import (envato, reddit, sheets, wordpress)
+from markan.cmd import (envato, wordpress)
 
 import click
 
@@ -23,6 +23,4 @@ def markan():
     pass
 
 markan.add_command(envato)
-markan.add_command(reddit)
-markan.add_command(sheets)
 markan.add_command(wordpress)

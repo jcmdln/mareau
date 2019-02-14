@@ -1,5 +1,5 @@
 from __future__   import print_function
-from markan.utils import (ToCSV, ToJSON)
+from markan.utils import (WriteCsv, WriteJson)
 from threading    import Thread
 
 import click
@@ -90,7 +90,7 @@ def envato(category, domain, token, csv, json):
     File = 'envato-' + domain + '-' + category
 
     if json:
-        ToJSON(File + '.json', j.dumps(data))
+        WriteJson(File + '.json', j.dumps(data))
 
     if csv:
-        ToCSV(File + '.csv', data)
+        WriteCsv(File + '.csv', data)
