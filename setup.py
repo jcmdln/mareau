@@ -6,7 +6,7 @@ def Open(File):
 
 setup(
     name             = 'markan',
-    version          = '0.0.0a0',
+    version          = '0.0.1',
     description      = 'API-driven market analysis',
     long_description = Open('Readme.md'),
     license          = Open('License.md'),

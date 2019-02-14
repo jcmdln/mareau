@@ -1,7 +1,7 @@
 import csv
 import json
 
-def ToCSV(File, Data):
+def WriteCsv(File, Data):
     print('markan: writing to', File + '...')
     f = open(File, 'w')
     w = csv.writer(f)
@@ -9,7 +9,7 @@ def ToCSV(File, Data):
     for v in Data:
         w.writerow(v.values())
 
-def ToJSON(File, Data):
+def WriteJson(File, Data):
     print('markan: writing to', File + '...')
     f = open(File, 'w')
     for i in Data:

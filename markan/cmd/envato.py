@@ -1,18 +1,18 @@
 from __future__   import print_function
 from markan.utils import (ToCSV, ToJSON)
 from threading    import Thread
+
 import click
 import json as j
 import requests
 
 @click.command(short_help = 'Pull data from the Envato API')
-@click.option('--category', '-c', help='Category',
-              default='all')
+@click.option('--category', '-c', help='Category', default='all')
 @click.option('--domain', '-d', help='Domain', default='themeforest.net')
 @click.option('--token', '-t', help='Auth token', default='')
 @click.option('--csv', '-c', help='Export as CSV', is_flag=True, default=False)
-@click.option('--json', '-j', help='Export as JSON', is_flag=True,
-              default=False)
+@click.option('--json', '-j', help='Export as JSON', is_flag=True, default=False)
+
 
 def envato(category, domain, token, csv, json):
     if token == '':
@@ -87,7 +87,10 @@ def envato(category, domain, token, csv, json):
             Get(category)
         category = "all"
 
+    File = 'envato-' + domain + '-' + category
+
     if json:
-        ToJSON('envato-'+domain+'-'+category+'.json', j.dumps(data))
+        ToJSON(File + '.json', j.dumps(data))
+
     if csv:
-        ToCSV('envato-'+domain+'-'+category+'.csv', data)
+        ToCSV(File + '.csv', data)
